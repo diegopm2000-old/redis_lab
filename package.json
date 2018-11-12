@@ -1,0 +1,23 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "Redis Labo",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.10.0",
+    "nodemon": "^1.18.6"
+  },
+  "author": "Diego Perez Molinero",
+  "license": "ISC",
+  "dependencies": {
+    "execution-time": "^1.3.0",
+    "file-type": "^10.4.0",
+    "log-color": "^1.0.0",
+    "redis": "^2.8.0"
+  }
+}
