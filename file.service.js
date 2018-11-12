@@ -26,12 +26,14 @@ async function getFile(filepath) {
   const fileFromRedis = await redisHelper.load(filepath);
 
   if (fileFromRedis === null) {
-    log.debug(`${moduleName}:${getFile.name} (MID) --> File NOT FOUND in REDIS...loading from disk`);
+    log.debug(`*************** ${moduleName}:${getFile.name} (MID) --> File NOT FOUND in REDIS...loading from disk`);
     resultFile = await fileSystemHelper.load(filepath);
     // Saves file to Redis Cache
-    // TODO
+    await redisHelper.save(filepath, resultFile);
   } else {
-    log.debug(`${moduleName}:${getFile.name} (MID) --> File FOUND in REDIS`);
+    log.debug(`*************** ${moduleName}:${getFile.name} (MID) --> File FOUND in REDIS`);
+    console.log(`type of fileFromRedis: ${typeof fileFromRedis}`);
+    console.log(`fileFromRedis: ${JSON.stringify(fileFromRedis)}`);
     resultFile = fileFromRedis;
   }
 

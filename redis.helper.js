@@ -44,10 +44,11 @@ function load(filepath) {
       }
       if (reply != null) {
         log.debug(`${moduleName}:${load.name} (OUT) --> reply: null`);
+        resolve(reply);
       } else {
         log.debug(`${moduleName}:${load.name} (OUT) --> reply: ${reply}`);
+        resolve(reply);
       }
-      resolve(reply);
     });
   });
 }
@@ -57,7 +58,7 @@ function save(filepath, file) {
     try {
       log.debug(`${moduleName}:${save.name} (IN) --> filepath: ${filepath}, file: ${file.trace()}`);
 
-      client.set(file.name, file);
+      client.set(filepath, file);
 
       log.debug(`${moduleName}:${save.name} (OUT) --> OK`);
       resolve(true);
