@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const fileExtension = require('file-extension');
 const fileType = require('file-type');
 
 const log = require('./log.helper');
@@ -14,6 +15,28 @@ const File = require('./file.entity');
 // //////////////////////////////////////////////////////////////////////////////
 
 const moduleName = '[ FileSystem Helper]';
+
+// //////////////////////////////////////////////////////////////////////////////
+// PRIVATE FUNCTIONS
+// //////////////////////////////////////////////////////////////////////////////
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function buildFileType(filepath, data) {
+  if (fileType(data) != null) {
+    return fileType(data);
+  }
+
+  const type = {
+    ext: fileExtension(filepath),
+    mime: 'text/plain',
+  };
+  return type;
+}
 
 // //////////////////////////////////////////////////////////////////////////////
 // PUBLIC FUNCTIONS
@@ -30,13 +53,17 @@ async function load(filepath) {
       const fileProperties = {
         data,
         name: path.basename(filepath),
-        type: fileType(data),
+        type: buildFileType(filepath, data),
       };
 
       const fileLoaded = new File(fileProperties);
 
-      log.debug(`${moduleName}:${load.name} (OUT) --> fileLoaded: ${fileLoaded.trace()}`);
-      resolve(fileLoaded);
+      // Delay simulating slow disk speed
+      sleep(5000)
+        .then(() => {
+          log.debug(`${moduleName}:${load.name} (OUT) --> fileLoaded: ${fileLoaded.trace()}`);
+          resolve(fileLoaded);
+        });
     } catch (error) {
       log.error(`${moduleName}:${load.name} (ERROR) --> error: ${error.message}`);
       reject(error);

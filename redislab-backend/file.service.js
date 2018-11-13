@@ -3,6 +3,7 @@
 const perf = require('execution-time')();
 
 const log = require('./log.helper');
+const File = require('./file.entity');
 const redisHelper = require('./redis.helper');
 const fileSystemHelper = require('./filesystem.helper');
 
@@ -13,6 +14,23 @@ const fileSystemHelper = require('./filesystem.helper');
 const moduleName = '[ File Service]';
 
 // //////////////////////////////////////////////////////////////////////////////
+// PRIVATE FUNCTIONS
+// //////////////////////////////////////////////////////////////////////////////
+
+function buildFile(reply) {
+  // console.log(`entrando en buildFile con reply: ${JSON.stringify(reply)}`);
+  // const objReply = JSON.parse(reply);
+  const fileProperties = {
+    data: reply.data,
+    name: reply.name,
+    type: JSON.parse(reply.type),
+  };
+  const resultFile = new File(fileProperties);
+
+  return resultFile;
+}
+
+// //////////////////////////////////////////////////////////////////////////////
 // PUBLIC FUNCTIONS
 // //////////////////////////////////////////////////////////////////////////////
 
@@ -21,25 +39,30 @@ async function getFile(filepath) {
   perf.start();
 
   let resultFile;
+  let foundInRedis = false;
 
   // First check if the file is stored in redis
-  const fileFromRedis = await redisHelper.load(filepath);
+  const reply = await redisHelper.load(filepath);
 
-  if (fileFromRedis === null) {
-    log.debug(`*************** ${moduleName}:${getFile.name} (MID) --> File NOT FOUND in REDIS...loading from disk`);
+  if (reply === null) {
+    foundInRedis = false;
+    log.debug(`--------------- ${moduleName}:${getFile.name} (MID) --> File NOT FOUND in REDIS...loading from disk`);
     resultFile = await fileSystemHelper.load(filepath);
     // Saves file to Redis Cache
     await redisHelper.save(filepath, resultFile);
   } else {
+    foundInRedis = true;
     log.debug(`*************** ${moduleName}:${getFile.name} (MID) --> File FOUND in REDIS`);
-    console.log(`type of fileFromRedis: ${typeof fileFromRedis}`);
-    console.log(`fileFromRedis: ${JSON.stringify(fileFromRedis)}`);
-    resultFile = fileFromRedis;
+    resultFile = buildFile(reply);
   }
 
   const resultTime = perf.stop();
   log.debug(`${moduleName}:${getFile.name} (OUT) --> resultFile: ${resultFile.trace()}`);
-  log.info(`${moduleName}:${getFile.name} (TIME) --> File loaded in ${resultTime.time} ms`);
+  if (foundInRedis) {
+    log.info(`${moduleName}:${getFile.name} (TIME) --> File loaded FROM REDIS in ${resultTime.time} ms`);
+  } else {
+    log.info(`${moduleName}:${getFile.name} (TIME) --> File loaded FROM DISK in ${resultTime.time} ms`);
+  }
 
   return resultFile;
 }

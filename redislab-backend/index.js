@@ -28,18 +28,19 @@ function initRedis() {
   log.debug(`${moduleName}:${initRedis.name} (OUT) --> IPFS Helper initialized OK!`);
 }
 
-
 function start() {
   // 1. Init Redis System
   initRedis();
   const folderIN = '../files/filesIN';
   const folderOUT = '../files/filesOUT';
   const testFiles = [
+    { originFile: 'prueba.txt' },
     { originFile: 'index.js' },
-    { originFile: 'CleanArchitecture.pdf' },
-    { originFile: 'ubuntu-18.04.1-desktop-amd64.iso' },
+    // { originFile: 'CleanArchitecture.pdf' },
+    // { originFile: 'SoapUI-x64-5.4.0.sh' },
+    // { originFile: 'ubuntu-18.04.1-desktop-amd64.iso' },
   ];
-  const index = 0;
+  const index = 3;
   // 2. Prepare origin file and name of destination file
   const originpathFile = `${folderIN}/${testFiles[index].originFile}`;
   // 3. Load File from filesystem
