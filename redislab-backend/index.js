@@ -25,7 +25,7 @@ function initRedis() {
   log.debug(`${moduleName}:${initRedis.name} (IN) --> options: ${JSON.stringify(options)}`);
   redisHelper.init(options);
 
-  log.debug(`${moduleName}:${initRedis.name} (OUT) --> IPFS Helper initialized OK!`);
+  log.debug(`${moduleName}:${initRedis.name} (OUT) --> Redis Helper initialized OK!`);
 }
 
 function start() {
